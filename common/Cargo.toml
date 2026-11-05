@@ -1,0 +1,24 @@
+[package]
+name = "common"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+solana-address.workspace = true
+solana-commitment-config.workspace = true
+solana-keypair.workspace = true
+solana-rpc-client.workspace = true
+solana-rpc-client-api.workspace = true
+solana-signature.workspace = true
+solana-signer.workspace = true
+solana-transaction.workspace = true
+inference-escrow-client.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

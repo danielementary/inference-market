@@ -1,0 +1,24 @@
+[package]
+name = "inference-escrow-client"
+version = "0.1.0"
+edition = "2021"
+description = "Rust client for the inference_escrow program, generated from its Anchor IDL with Codama"
+publish = false
+
+[features]
+# Enables the generated `fetch_*` account helpers (blocking RPC client).
+fetch = ["dep:solana-rpc-client"]
+
+[dependencies]
+borsh = "1.5"
+num-derive = "0.4"
+num-traits = "0.2"
+solana-account = "4.0"
+solana-account-info = "3.1"
+solana-address = { version = "2.2", features = ["borsh", "copy", "curve25519", "decode"] }
+solana-cpi = "3.1"
+solana-instruction = "4.0"
+solana-program-error = "3.0"
+solana-rpc-client = { version = "4.0", optional = true }
+thiserror = "1.0"
+

@@ -1,0 +1,25 @@
+[package]
+name = "indexer"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+axum.workspace = true
+borsh.workspace = true
+bs58.workspace = true
+clap.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+solana-address = { workspace = true, features = ["borsh"] }
+solana-commitment-config.workspace = true
+solana-rpc-client.workspace = true
+solana-rpc-client-api.workspace = true
+solana-signature.workspace = true
+solana-transaction-status-client-types.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+common.workspace = true

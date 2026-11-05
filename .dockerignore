@@ -1,0 +1,8 @@
+.git
+target
+onchain/target
+**/node_modules
+keys
+test-ledger
+.anchor
+*.db

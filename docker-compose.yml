@@ -1,0 +1,75 @@
+# Off-chain stack against the validator running on the host (scripts/localnet.sh):
+#   docker compose up -d --build
+#   docker compose run --rm cli offers
+#   docker compose run --rm e2e
+
+x-app: &app
+  build: .
+  image: inference-market
+  environment:
+    RPC_URL: http://host.docker.internal:8899
+    KEYS_DIR: /keys
+  volumes:
+    - ./keys:/keys:ro
+  extra_hosts:
+    - host.docker.internal:host-gateway
+
+services:
+  # Program config (idempotent); everything else waits for it.
+  init:
+    <<: *app
+    command: ["infer", "admin", "init"]
+
+  coordinator:
+    <<: *app
+    command: ["coordinator", "--host", "0.0.0.0"]
+    ports: ["8080:8080"]
+    depends_on:
+      init: { condition: service_completed_successfully }
+    restart: unless-stopped
+
+  worker-1:
+    <<: *app
+    command: ["worker", "--key", "worker-1", "--model", "qwen38", "--tps", "40",
+              "--price-in", "100", "--price-out", "400",
+              "--coordinator", "ws://coordinator:8080/workers/ws"]
+    depends_on: [coordinator]
+    restart: unless-stopped
+
+  worker-2:
+    <<: *app
+    command: ["worker", "--key", "worker-2", "--model", "llama4", "--tps", "30",
+              "--price-in", "80", "--price-out", "300", "--faulty",
+              "--coordinator", "ws://coordinator:8080/workers/ws"]
+    depends_on: [coordinator]
+    restart: unless-stopped
+
+  indexer:
+    <<: *app
+    command: ["indexer", "--host", "0.0.0.0"]
+    ports: ["8090:8090"]
+    depends_on:
+      init: { condition: service_completed_successfully }
+    restart: unless-stopped
+
+  # On demand: docker compose run --rm cli <command>
+  cli:
+    <<: *app
+    profiles: [tools]
+    entrypoint: ["infer", "--coordinator", "http://coordinator:8080", "--indexer", "http://indexer:8090"]
+    volumes:
+      - ./keys:/keys:ro
+      - infer-config:/root/.config/infer
+
+  # On demand: docker compose run --rm e2e
+  e2e:
+    <<: *app
+    profiles: [tools]
+    command: ["e2e"]
+    environment:
+      RPC_URL: http://host.docker.internal:8899
+      KEYS_DIR: /keys
+      COORDINATOR_URL: http://coordinator:8080
+
+volumes:
+  infer-config:
